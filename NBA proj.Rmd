@@ -1,0 +1,198 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+loading dataset
+```{r}
+nba_data <- read.csv("nba_final.csv")
+
+head(nba_data)
+```
+cleaning dataset & ensuring Pos1 is treated as a factor
+```{r}
+nba_clean <- nba_data %>%
+  filter(!is.na(Salary), !is.na(FG.), !is.na(X3P.), !is.na(X2P.), !is.na(FT.))
+
+nba_clean$Pos1 <- as.factor(nba_clean$Pos1)
+head(nba_clean)
+```
+selecting necessary data for this project
+```{r}
+nba_model_data <- nba_clean %>%
+  select(Salary, PTS, AST, TRB, Pos1, Age)
+
+head(nba_model_data)
+```
+Visualizing Data to determine distribution/skewness
+```{r}
+hist(nba_model_data$Salary, main = "Histogram of Salary", xlab = "Salary", col = "blue", breaks = 30)
+
+hist(nba_model_data$PTS, main = "Histogram of Points per Game", xlab = "Points per Game", col = "green", breaks = 30)
+
+hist(nba_model_data$AST, main = "Histogram of Assists per Game", xlab = "Assists per Game", col = "purple", breaks = 30)
+
+hist(nba_model_data$TRB, main = "Histogram of Rebounds per Game", xlab = "Rebounds per Game", col = "orange", breaks = 30)
+
+hist(nba_model_data$Age, main = "Histogram of Age", xlab = "Age", col = "red", breaks = 30)
+```
+Visualizing Data to determine outliers
+```{r}
+boxplot(nba_model_data$Salary, main = "Boxplot of Salary", ylab = "Salary", col = "blue")
+
+boxplot(nba_model_data$PTS, main = "Boxplot of Points per Game", ylab = "Points per Game", col = "green")
+
+boxplot(nba_model_data$AST, main = "Boxplot of Assists per Game", ylab = "Assists per Game", col = "purple")
+
+boxplot(nba_model_data$TRB, main = "Boxplot of Rebounds per Game", ylab = "Rebounds per Game", col = "orange")
+
+boxplot(nba_model_data$Age, main = "Boxplot of Age", ylab = "Age", col = "red")
+```
+Skewness and outliers:
+  
+  Salary: Right-skewed, suggesting majority of players earn lower salaries, with a small few earning significantly more. Several outliers exist above upper whisker. This makes sense as star players earn disproportionately more than the average.
+  
+  PPG: Right-skewked, not as pronounced as the Salary distribution. The majority of players seem to score less than 15 points per game, whereas a much smaller amount score over 20 points. We can see the presence of outliers, which shows that there are a small number of players who consistently score a lot of points per game. 
+  
+  Assists: Right-Skewed, most players getting between 0-2 assists per game. Suggest a small number of players make up for higher assist counts. This makes sense as point guards, the ones who playmake, are 1 of the 5 players on a team that are expected to get assists every game. The boxplot shows the existence of outliers, which represent star point-guards that are pass-first players.
+  
+  Rebounds: Right-Skewed, most players grab 2-5 rebounds whereas only a select few get between 10-15. We see outliers representing elite rebounders such as centers.
+  
+  Age: Slight right-skew, most players are aged low 20s to late 20s, with older players being much more uncommon. We see outliers near the higher end, representing how athletes tend to have short careers.
+  
+Fitting multiple linear regression model with Salary as response variable
+```{r}
+model <- lm(Salary ~ PTS + AST + TRB + Pos1 + Age, data = nba_model_data)
+
+summary(model)
+
+par(mfrow = c(2, 2))
+plot(model)
+```
+Interpretation of Linear Model:
+  
+  Coefficients:
+    - PTS, AST, TRB, and AGE all have statistically significant positive coefficients, meaning they are strong indicators of salary. AST is the highest here.
+    - As for positions, point guards has a significant negative coefficient, meaning point guards tend to earn less compared to baseline position (center)
+    
+  R-Squared = 0.5538: This tells us our model explains around 55.38% of variance in salary
+  
+  Adjusted R-squared = 0.5509: Slightly lower than R-Squared as it accounts for the number of predictors in the model. This indicates a reasonable fit, though there may exist other factors that influence salary that are not present in this model.
+    
+  p-value: < 2.2e-16 & F-Statistic = 188.5: This indicates that the predictors jointly have a significant statistical relationship with Salary.
+  
+Diagnostic Plots:
+
+  Residuals vs Fitted:
+    This plot shows some non-random patterns, indicating potential issues with heteroscedasticity or non-linearity. This suggests that the model might not fully meet the assumption of homoscedasticity.
+    
+  Normal Q-Q Plot:
+    The plot shows a deviation from the straight line, especially in the tails, indicating that the residuals are not perfectly normally distributed. This might be expected due to outliers and the skewness in salary distribution.
+
+  Scale-Location Plot:
+    There is a slight pattern here as well, which confirms the presence of heteroscedasticity. The residuals are not spread equally across the range of fitted values.
+
+  Residuals vs Leverage:
+    This plot highlights some influential points with high leverage. These points might be affecting the model significantly.
+
+Summarizing each variable
+```{r}
+summary_table <- summary(nba_model_data[c("Salary", "PTS", "AST", "TRB", "Age")])
+
+print(summary_table)
+
+pos_summary <- table(nba_model_data$Pos1)
+
+print(pos_summary)
+```
+Salary:
+  Median Salary: $3,565,210 – Half the players earn less than this, highlighting a lower mid-point in player salaries.
+  Mean Salary: $6,963,233 – The mean is significantly higher than the median, indicating that a few high-paid players are pulling the average up.
+  Max Salary: $37,457,154 – As with any sport there will be star players with extremely high salaries, contributing to the right skew in the salary distribution.
+
+Points per Game (PTS):
+  Median: 7.8 points per game – Most players average fewer than 10 points per game.
+  Max: 36.1 points per game – A few high-scoring players boost the maximum value, suggesting a right-skewed distribution.
+  
+Assists per Game (AST):
+  Median: 1.5 assists per game – Most players contribute a small number of assists.
+  Max: 11.2 assists per game – Likely comes from elite point guards or playmakers.
+
+Rebounds per Game (TRB):
+  Median: 3.2 rebounds per game – Typical player grabs only a few rebounds, likely skewed by non-center positions.
+  Max: 16 rebounds per game – Most likely for a center to have very high rebounding numbers.
+
+Age:
+  Median: 26 years – Most players are in their mid-to-late 20s.
+  Max: 42 years – There are a few outliers who continue playing into their late 30s and 40s.
+
+Categorical Variable (Pos1 - Player Position):
+  Position Distribution:
+    Centers (C): 204 players
+    Power Forwards (PF): 261 players
+    Point Guards (PG): 254 players
+    Small Forwards (SF): 205 players
+    Shooting Guards (SG): 300 players
+    
+Shooting guards are the most common position in this dataset, while centers are the least common.
+
+Part 3
+Model diagnostics and assumption checks
+
+```{r}
+plot(model, which = 1)  # Residuals vs Fitted plot
+```
+check linearity: Curved pattern, indicating non-linearity.
+
+
+```{r}
+plot(model, which = 2)  # Q-Q plot for residuals
+```
+check normality: deviation in tails, violation of normality
+
+```{r}
+plot(model, which = 3)  # Scale-Location plot
+```
+check homoscedasticity: spread increases with more fitted values, showing heteroscedasticity
+
+```{r}
+library(car)
+```
+
+```{r}
+vif(model)
+```
+check VIF values: All vif vaues are under 5, indicating no severe multicollinearity among predictors
+
+adressing issues w/ log transformation
+```{r}
+# log-transformed model
+nba_data$LogSalary <- log(nba_data$Salary)
+model_log <- lm(LogSalary ~ PTS + AST + TRB + Pos1 + Age, data = nba_data)
+
+plot(model_log, which = 1)
+plot(model_log, which = 2)
+plot(model_log, which = 3)
+```
+linearity: Improvement over before, still slight curve
+Normality: There's still deviation in tails, try box-cox transformation
+Homoscedasticity: spread of residuals still varies sightly across fitted values
+
+addressing assumptions
+```{r}
+library(MASS)
+boxcox(model_log, lambda = seq(-2, 2, 0.1))  # Checking for the best λ
+```
+lambda=2
+
+```{r}
+nba_data$BoxCoxSalary <- nba_data$Salary^2
+model_boxcox <- lm(BoxCoxSalary ~ PTS + AST + TRB + Pos1 + Age, data = nba_data)
+plot(model_boxcox, which = 1)
+plot(model_boxcox, which = 2)
+plot(model_boxcox, which = 3)
+```
