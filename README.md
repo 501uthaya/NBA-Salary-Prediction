@@ -1,2 +1,20 @@
-# NBA-Salary-Prediction
+![image](https://github.com/user-attachments/assets/8a289f4d-3fd2-436f-9375-ac28eb224b07)# NBA-Salary-Prediction
 Predicting NBA player salaries using multiple linear regression in RStudio.
+![image](https://github.com/user-attachments/assets/b419eb54-a183-41e4-9b56-6609d3b68d9a)
+![image](https://github.com/user-attachments/assets/4c544d61-f0fc-4ffd-a77c-6fc37ca55f8f)
+![image](https://github.com/user-attachments/assets/8bbda4b3-eac2-48fe-b98a-1993ddadb243)
+![image](https://github.com/user-attachments/assets/a8da61cb-7044-40dc-ad54-c99dedfab4ff)
+![image](https://github.com/user-attachments/assets/892d6457-5c8d-492d-89bc-2c8fbe87689b)
+![image](https://github.com/user-attachments/assets/f8d2c060-52b2-49c0-836e-4bb7ea8b7318)
+![image](https://github.com/user-attachments/assets/3800a239-0d57-495b-95e6-a0d08ab17479)
+![image](https://github.com/user-attachments/assets/3c1dfc7c-cec6-4f28-8165-3186a667c93b)
+![image](https://github.com/user-attachments/assets/a9ecc395-7736-4696-b613-4eb01fd7acbe)
+![image](https://github.com/user-attachments/assets/78c1d3c5-0454-42ad-877c-e7277332d80f)
+![image](https://github.com/user-attachments/assets/faf0465e-9c58-4e54-9406-bdc5a0365a75)
+![image](https://github.com/user-attachments/assets/4cba095c-5c67-4aa4-8619-627c48420db2)
+![image](https://github.com/user-attachments/assets/e3a5ab81-e585-4281-a5ad-acc595e5c2e7)
+![image](https://github.com/user-attachments/assets/b767c6ed-5d74-464a-b7b0-aca756df1108)
+![image](https://github.com/user-attachments/assets/598cb830-6e26-4737-b7d8-df7b6df37a38)
+Fitting multiple linear regression model with Salary as response variable
+![image](https://github.com/user-attachments/assets/6313ae21-5278-46e8-8541-b1f77b5c3056)
+![image](https://github.com/user-attachments/assets/25cb7dc3-61f0-4675-9cb3-d7d336be0597)
